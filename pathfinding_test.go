@@ -44,7 +44,10 @@ func read_map (map_str string) MapDict {
 }
 
 func str_map(data MapDict, nodes []*Node) string {
-	result := "xxx"
+	result := fmt.Sprintf("%d", len(nodes))
+	for _, node := range nodes{
+		fmt.Println(node)
+	}
 	return result
 }
 

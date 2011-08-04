@@ -37,7 +37,7 @@ func NewNode (x, y int) *Node {
 
 //Return string representation of the node
 func (self *Node) String() string {
-	return fmt.Sprintf("<Node x:%s y:%s addr:%s>", self.x, self.y, &self)
+	return fmt.Sprintf("<Node x:%d y:%d addr:%d>", self.x, self.y, &self)
 }
 
 //Start, end nodes and a slice of nodes
@@ -49,7 +49,7 @@ type Graph struct {
 //Return a Graph from a map of coordinates (those that are passible)
 func NewGraph (map_data MapDict) *Graph {
 	var start, stop *Node
-	nodes := make([]*Node, len(map_data) + len(map_data[0]))
+	var nodes []*Node
 	for i, row := range map_data {
 		for j, _type := range row {
 			if _type == LAND || _type == START || _type == STOP {
@@ -76,24 +76,31 @@ func NewGraph (map_data MapDict) *Graph {
 func (self *Graph) adjacentNodes(node *Node) []*Node {
 	var result []*Node
 	for _, n := range self.nodes {
-		switch{
-		case node.x + 1 == n.x && node.y == n.y:
-		case node.x-1 == n.x && node.y == n.y:
-		case node.x == n.x && node.y-1 == n.y:
-		case node.x == n.x && node.y+1 == n.y:
-			result = append(result, n)
+		if n != nil {
+			if(
+			(node.x + 1 == n.x && node.y == n.y) ||
+			(node.x - 1 == n.x && node.y == n.y) ||
+			(node.x == n.x && node.y - 1 == n.y) ||
+			(node.x == n.x && node.y + 1 == n.y)) {
+				result = append(result, n)
+			}
 		}
 	}
 	return result
 }
 
-func (self *Graph) retracePath(current_node *Node, path []*Node) []*Node {
-	var none []*Node
+func retracePath (current_node *Node) []*Node {
+	var path []*Node
 	path = append(path, current_node)
-	if current_node.parent != nil {
-		return none
+
+	for current_node.parent != nil {
+		path = append(path, current_node.parent)
+		current_node = current_node.parent
 	}
-	self.retracePath(current_node.parent, path)
+	//Reverse path
+	for i, j := 0, len(path)-1; i < j; i, j = i+1, j-1 {
+		path[i], path[j] = path[j], path[i]
+	}
 	return path
 }
 
@@ -145,7 +152,7 @@ func Astar(graph *Graph) []*Node {
 		//Get the node with the min H
 		current := minH(openSet)
 		if current == graph.stop {
-			return graph.retracePath(current, make([]*Node, 0))
+			return retracePath(current)
 		}
 		openSet = removeNode(openSet, current)
 		closedSet = append(closedSet, current)
