@@ -16,12 +16,14 @@ Using goinstall
 ++++++++++++++++++
 
 ::
+
         $ goinstall github.com/humanfromearth/gopathfinding
 
 Using make
 +++++++++++++
 
 ::
+
         $ git clone git://github.com/humanfromearth/gopathfinding
         $ cd gopathfinding
         $ make install
@@ -30,6 +32,7 @@ Example
 -----------
 
 ::
+
         import (
                 pathfinding "github.com/humanfromearth/gopathfinding"
         )
@@ -43,5 +46,8 @@ Documentation
 
 http://gopkgdoc.appspot.com/pkg/github.com/humanfromearth/gopathfinding
 
-Or::
+Or
+
+::
+
         $ godoc github.com/humanfromearth/gopathfinding
