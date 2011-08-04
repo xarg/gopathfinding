@@ -1,5 +1,5 @@
 include $(GOROOT)/src/Make.inc
 TARG=github.com/humanfromearth/gopathfinding
 GOFILES=\
-	pathfinding.go
+	astar.go
 include $(GOROOT)/src/Make.pkg

@@ -20,21 +20,23 @@ const MAP1 = `............................
 `
 
 func read_map (map_str string) MapDict {
-	var result MapDict
 	rows := strings.Split(map_str, "\n")
-
-	for i:= 0; i <= len(rows); i++ {
-		for j := 0; j <= len(rows[i]); j++ {
+	result := make(MapDict, len(rows))
+	for i := 0; i <= len(rows); i++ {
+		result[i] = make(map[int] int, len(rows))
+	}
+	for i := 0; i < len(rows); i++ {
+		for j := 0; j < len(rows[i]); j++ {
 			char := rows[i][j]
 			switch char{
 			case '.':
-				result.data[i][j] = LAND
+				result[i][j] = LAND
 			case '#':
-				result.data[i][j] = WALL
+				result[i][j] = WALL
 			case 's':
-				result.data[i][j] = START
+				result[i][j] = START
 			case 'e':
-				result.data[i][j] = STOP
+				result[i][j] = STOP
 			}
 		}
 	}
@@ -42,11 +44,11 @@ func read_map (map_str string) MapDict {
 }
 
 func str_map(data MapDict, nodes []*Node) string {
-	result := ""
+	result := "xxx"
 	return result
 }
 
-func test_map1 (t *testing.T) {
+func TestMap1 (t *testing.T) {
 	map_dict := read_map(MAP1)//Read map data and create a map_dict
 	graph := NewGraph(map_dict) //Create a new graph
 	nodes_path := Astar(graph) //Get the shortest path
