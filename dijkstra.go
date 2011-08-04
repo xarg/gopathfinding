@@ -1,0 +1,5 @@
+package pathfinding
+
+func Dijkstra() {
+
+}
