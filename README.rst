@@ -34,11 +34,19 @@ Example
 ::
 
         import (
+                "fmt"
                 pathfinding "github.com/humanfromearth/gopathfinding"
         )
 
         func main() {
-                shortest_path = pathfinding.Astar()
+                //A pathfinding.MapData containing the 
+                //coordinates(x, y) of LAND, WALL, START and STOP of the map.
+                //If your map is something more than 2d matrix then you might want to modify adjacentNodes
+
+                graph := pathfinding.NewGraph(map_data)
+
+                //Returns a list of nodes from START to STOP avoiding all obstacles if possible
+                shortest_path := pathfinding.Astar(graph)
         }
 
 Documentation
