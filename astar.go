@@ -14,7 +14,7 @@ const (
 	STOP
 )
 
-type MapDict map[int] map[int] int
+type MapData [][]int
 
 //A point is just a set of x, y coordinates with a PointType attached
 type Node struct {
@@ -29,7 +29,7 @@ func NewNode (x, y int) *Node {
 	node := &Node{
 		x: x,
 		y: y,
-		parent: new(Node),
+		parent: nil,
 		H: max_int,
 	}
 	return node
@@ -47,7 +47,7 @@ type Graph struct {
 }
 
 //Return a Graph from a map of coordinates (those that are passible)
-func NewGraph (map_data MapDict) *Graph {
+func NewGraph (map_data MapData) *Graph {
 	var start, stop *Node
 	var nodes []*Node
 	for i, row := range map_data {
@@ -89,20 +89,6 @@ func (self *Graph) adjacentNodes(node *Node) []*Node {
 	return result
 }
 
-func retracePath (current_node *Node) []*Node {
-	var path []*Node
-	path = append(path, current_node)
-
-	for current_node.parent != nil {
-		path = append(path, current_node.parent)
-		current_node = current_node.parent
-	}
-	//Reverse path
-	for i, j := 0, len(path)-1; i < j; i, j = i+1, j-1 {
-		path[i], path[j] = path[j], path[i]
-	}
-	return path
-}
 
 func abs(x int) int {
 	if x < 0 {
@@ -143,6 +129,19 @@ func minH(nodes []*Node) *Node {
 	return result_node
 }
 
+func retracePath (current_node *Node) []*Node {
+	var path []*Node
+	path = append(path, current_node)
+	for current_node.parent != nil {
+		path = append(path, current_node.parent)
+		current_node = current_node.parent
+	}
+	//Reverse path
+	for i, j := 0, len(path)-1; i < j; i, j = i+1, j-1 {
+		path[i], path[j] = path[j], path[i]
+	}
+	return path
+}
 
 //A* search algorithm. See http://en.wikipedia.org/wiki/A*_search_algorithm
 func Astar(graph *Graph) []*Node {
@@ -158,7 +157,9 @@ func Astar(graph *Graph) []*Node {
 		closedSet = append(closedSet, current)
 		for _, tile := range graph.adjacentNodes(current) {
 			if !hasNode(closedSet, tile) {
-				tile.H = (abs(graph.stop.x - tile.x) + abs(graph.stop.y - tile.y)) * 10
+				tile.H = (
+					abs(graph.stop.x - tile.x) +
+					abs(graph.stop.y - tile.y)) * 10
 				if !hasNode(openSet, tile) {
 					openSet = append(openSet, tile)
 				}

@@ -7,23 +7,23 @@ import (
 )
 
 const MAP1 = `............................
-...e.........#..............
+............................
+.............#..............
+.............#..............
+.......e.....#..............
 .............#..............
 .............#..............
 .............#..............
 .............#..............
-.............#..............
-.............#..............
-.............#..............
-.......................s....
+.............#.........s....
 ............................
 `
 
-func read_map (map_str string) MapDict {
+func read_map (map_str string) MapData {
 	rows := strings.Split(map_str, "\n")
-	result := make(MapDict, len(rows))
-	for i := 0; i <= len(rows); i++ {
-		result[i] = make(map[int] int, len(rows))
+	result := make(MapData, len(rows))
+	for i := 0; i <= len(rows) - 1; i++ {
+		result[i] = make([]int, len(rows[1]))
 	}
 	for i := 0; i < len(rows); i++ {
 		for j := 0; j < len(rows[i]); j++ {
@@ -43,17 +43,45 @@ func read_map (map_str string) MapDict {
 	return result
 }
 
-func str_map(data MapDict, nodes []*Node) string {
-	result := fmt.Sprintf("%d", len(nodes))
-	for _, node := range nodes{
-		fmt.Println(node)
+func str_map(data MapData, nodes []*Node) string {
+	var result string
+	for i, row := range data {
+		for j, cell := range row {
+			added := false
+			for _, node := range nodes {
+				if node.x == i && node.y == j {
+					result += "+"
+					added = true
+					break
+				}
+			}
+			if !added {
+				switch cell {
+				case LAND:
+					result += "."
+				case WALL:
+					result += "#"
+				case START:
+					result += "s"
+				case STOP:
+					result += "e"
+				default: //Unknown
+					result += "?"
+				}
+			}
+		}
+		result += "\n"
 	}
 	return result
 }
 
-func TestMap1 (t *testing.T) {
-	map_dict := read_map(MAP1)//Read map data and create a map_dict
-	graph := NewGraph(map_dict) //Create a new graph
+func TestAstar1 (t *testing.T) {
+	map_data := read_map(MAP1)//Read map data and create the map_data
+	graph := NewGraph(map_data) //Create a new graph
 	nodes_path := Astar(graph) //Get the shortest path
-	fmt.Print(str_map(map_dict, nodes_path))
+	//fmt.Print(str_map(map_dict, nodes_path))
+	fmt.Print(str_map(map_data, nodes_path))
+	if len(nodes_path) != 28 {
+		t.Error("Got %d expected: 28", len(nodes_path))
+	}
 }
