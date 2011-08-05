@@ -30,16 +30,16 @@ const MAP2 = `............................
 .............#.......#.s....
 .....................#......`
 
-func read_map (map_str string) MapData {
+func read_map(map_str string) MapData {
 	rows := strings.Split(map_str, "\n")
 	result := make(MapData, len(rows))
-	for i := 0; i <= len(rows) - 1; i++ {
+	for i := 0; i <= len(rows)-1; i++ {
 		result[i] = make([]int, len(rows[1]))
 	}
 	for i := 0; i < len(rows); i++ {
 		for j := 0; j < len(rows[i]); j++ {
 			char := rows[i][j]
-			switch char{
+			switch char {
 			case '.':
 				result[i][j] = LAND
 			case '#':
@@ -86,20 +86,20 @@ func str_map(data MapData, nodes []*Node) string {
 	return result
 }
 
-func TestAstar1 (t *testing.T) {
-	map_data := read_map(MAP1)//Read map data and create the map_data
+func TestAstar1(t *testing.T) {
+	map_data := read_map(MAP1)  //Read map data and create the map_data
 	graph := NewGraph(map_data) //Create a new graph
-	nodes_path := Astar(graph) //Get the shortest path
+	nodes_path := Astar(graph)  //Get the shortest path
 	fmt.Println(str_map(map_data, nodes_path))
 	if len(nodes_path) != 28 {
 		t.Errorf("Expected 28. Got %d", len(nodes_path))
 	}
 }
 
-func TestAstar2 (t *testing.T) {
-	map_data := read_map(MAP2)//Read map data and create the map_data
+func TestAstar2(t *testing.T) {
+	map_data := read_map(MAP2)  //Read map data and create the map_data
 	graph := NewGraph(map_data) //Create a new graph
-	nodes_path := Astar(graph) //Get the shortest path
+	nodes_path := Astar(graph)  //Get the shortest path
 	fmt.Println(str_map(map_data, nodes_path))
 	if len(nodes_path) != 0 {
 		t.Errorf("Expected 0. Got %d", len(nodes_path))
