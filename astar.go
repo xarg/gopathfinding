@@ -16,6 +16,15 @@ const (
 
 type MapData [][]int
 
+//Return a new MapData by value given some dimensions
+func NewMapData(rows, cols int) *MapData {
+	result := make(MapData, rows)
+	for i := 0; i < rows; i++ {
+		result[i] = make([]int, cols)
+	}
+	return &result
+}
+
 //A point is just a set of x, y coordinates with a PointType attached
 type Node struct {
 	x, y   int //Using int for efficiency
@@ -44,15 +53,16 @@ func (self *Node) String() string {
 type Graph struct {
 	start, stop *Node
 	nodes       []*Node
+	data        *MapData
 }
 
 //Return a Graph from a map of coordinates (those that are passible)
-func NewGraph(map_data MapData) *Graph {
+func NewGraph(map_data *MapData) *Graph {
 	var start, stop *Node
 	var nodes []*Node
-	for i, row := range map_data {
+	for i, row := range *map_data {
 		for j, _type := range row {
-			if _type == LAND || _type == START || _type == STOP {
+			if _type == START || _type == STOP {
 				node := NewNode(i, j)
 				nodes = append(nodes, node)
 				if _type == START {
@@ -68,6 +78,7 @@ func NewGraph(map_data MapData) *Graph {
 		nodes: nodes,
 		start: start,
 		stop:  stop,
+		data:  map_data,
 	}
 	return g
 }
@@ -75,15 +86,38 @@ func NewGraph(map_data MapData) *Graph {
 //Get the nodes near some node
 func (self *Graph) adjacentNodes(node *Node) []*Node {
 	var result []*Node
-	for _, n := range self.nodes {
-		if n != nil {
-			if (node.x+1 == n.x && node.y == n.y) ||
-				(node.x-1 == n.x && node.y == n.y) ||
-				(node.x == n.x && node.y-1 == n.y) ||
-				(node.x == n.x && node.y+1 == n.y) {
+	map_data := *self.data
+	rows := len(map_data)
+	cols := len(map_data[0])
+
+	//If the coordinates are passable then create a new node and add it
+	append_node := func (x, y int) {
+		//Check if node is not already in the graph and append that node
+		for _, n := range self.nodes {
+			if n.x == x && n.y == y {
 				result = append(result, n)
+				return
 			}
 		}
+		_type := map_data[x][y]
+		if _type == LAND || _type == STOP {
+			//Create a new node and add it to the graph
+			n := NewNode(x, y)
+			result = append(result, n)
+			self.nodes = append(self.nodes, n)
+		}
+	}
+	if node.x <= rows && node.y + 1 < cols {
+		append_node(node.x, node.y + 1)
+	}
+	if node.x <= rows && node.y - 1 >= 0 {
+		append_node(node.x, node.y - 1)
+	}
+	if node.y <= cols && node.x + 1 < rows {
+		append_node(node.x + 1, node.y)
+	}
+	if node.y <= cols && node.x - 1 >= 0 {
+		append_node(node.x - 1, node.y)
 	}
 	return result
 }
@@ -97,13 +131,18 @@ func abs(x int) int {
 }
 
 func removeNode(nodes []*Node, node *Node) []*Node {
-	var result []*Node
-	for _, n := range nodes {
-		if n != node {
-			result = append(result, n)
+	ith := -1
+	for i, n := range nodes {
+		if n == node {
+			ith = i
+			break
 		}
 	}
-	return result
+	if ith != -1 {
+		copy(nodes[ith:], nodes[ith+1:])
+		nodes = nodes[:len(nodes)-1]
+	}
+	return nodes
 }
 
 func hasNode(nodes []*Node, node *Node) bool {
@@ -145,6 +184,7 @@ func retracePath(current_node *Node) []*Node {
 //A* search algorithm. See http://en.wikipedia.org/wiki/A*_search_algorithm
 func Astar(graph *Graph) []*Node {
 	var path, openSet, closedSet []*Node
+
 	openSet = append(openSet, graph.start)
 	for len(openSet) != 0 {
 		//Get the node with the min H
@@ -155,7 +195,7 @@ func Astar(graph *Graph) []*Node {
 		openSet = removeNode(openSet, current)
 		closedSet = append(closedSet, current)
 		for _, tile := range graph.adjacentNodes(current) {
-			if !hasNode(closedSet, tile) {
+			if tile != nil && graph.stop != nil && !hasNode(closedSet, tile) {
 				tile.H = (abs(graph.stop.x-tile.x) +
 					abs(graph.stop.y-tile.y)) * 10
 				if !hasNode(openSet, tile) {

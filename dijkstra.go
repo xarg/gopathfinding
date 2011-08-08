@@ -1,6 +1,6 @@
 package pathfinding
 
-func minDist(dist map[*Node] int) *Node {
+func minDist(dist map[*Node]int) *Node {
 	var result_node *Node
 	min := int(^uint(0) >> 1)
 	for node, _dist := range dist {
@@ -30,7 +30,7 @@ func Dijkstra(graph *Graph) []*Node {
 	MAX_INT := int(^uint(0) >> 1)
 	var path []*Node
 	var Q []*Node
-	dist := make(map[*Node] int, len(graph.nodes))
+	dist := make(map[*Node]int, len(graph.nodes))
 
 	for _, node := range graph.nodes {
 		dist[node] = MAX_INT

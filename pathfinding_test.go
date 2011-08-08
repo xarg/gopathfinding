@@ -4,6 +4,7 @@ import (
 	"testing"
 	"strings"
 	"fmt"
+	"rand"
 )
 
 const MAP1 = `............................
@@ -30,14 +31,17 @@ const MAP2 = `............................
 .............#.......#.s....
 .....................#......`
 
-func read_map(map_str string) MapData {
+func read_map(map_str string) *MapData {
 	rows := strings.Split(map_str, "\n")
-	result := make(MapData, len(rows))
-	for i := 0; i <= len(rows)-1; i++ {
-		result[i] = make([]int, len(rows[1]))
+	if len(rows) == 0 {
+		panic("The map needs to have at least 1 row")
 	}
-	for i := 0; i < len(rows); i++ {
-		for j := 0; j < len(rows[i]); j++ {
+	row_count := len(rows)
+	col_count := len(rows[0])
+
+	result := *NewMapData(row_count, col_count)
+	for i := 0; i < row_count; i++ {
+		for j := 0; j < col_count; j++ {
 			char := rows[i][j]
 			switch char {
 			case '.':
@@ -51,12 +55,12 @@ func read_map(map_str string) MapData {
 			}
 		}
 	}
-	return result
+	return &result
 }
 
-func str_map(data MapData, nodes []*Node) string {
+func str_map(data *MapData, nodes []*Node) string {
 	var result string
-	for i, row := range data {
+	for i, row := range *data {
 		for j, cell := range row {
 			added := false
 			for _, node := range nodes {
@@ -86,6 +90,23 @@ func str_map(data MapData, nodes []*Node) string {
 	return result
 }
 
+//Generate a random MapData given some dimensions
+func generate_map(n int) *MapData {
+	map_data := *NewMapData(n, n)
+	map_data[0][0] = START
+	map_data[n-1][n-1] = STOP
+
+	xs := rand.Perm(n-1)
+	ys := rand.Perm(n-1)
+
+	for i := 1; i < len(xs); i += rand.Intn(4) + 1 {
+		for j := 1; j < len(ys); j++ {
+			map_data[xs[i]][ys[j]] = WALL
+		}
+	}
+	return &map_data
+}
+
 func TestAstar1(t *testing.T) {
 	map_data := read_map(MAP1)  //Read map data and create the map_data
 	graph := NewGraph(map_data) //Create a new graph
@@ -104,4 +125,13 @@ func TestAstar2(t *testing.T) {
 	if len(nodes_path) != 0 {
 		t.Errorf("Expected 0. Got %d", len(nodes_path))
 	}
+}
+
+func BenchmarkAstar1(b *testing.B) {
+	b.StopTimer()
+	fmt.Println(b.N)
+	map_data := generate_map(b.N + 5)
+	graph := NewGraph(map_data)
+	b.StartTimer()
+	Astar(graph)
 }
