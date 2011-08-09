@@ -82,6 +82,23 @@ func NewGraph(map_data *MapData) *Graph {
 	}
 	return g
 }
+//Get *Node based on x, y coordinates.
+func (self *Graph) Node(x, y int) *Node {
+	//Check if node is not already in the graph and append that node
+	for _, n := range self.nodes {
+		if n.x == x && n.y == y {
+			return n
+		}
+	}
+	map_data := *self.data
+	if map_data[x][y] == LAND || map_data[x][y] == STOP {
+		//Create a new node and add it to the graph
+		n := NewNode(x, y)
+		self.nodes = append(self.nodes, n)
+		return n
+	}
+	return nil
+}
 
 //Get the nodes near some node
 func (self *Graph) adjacentNodes(node *Node) []*Node {
@@ -91,33 +108,28 @@ func (self *Graph) adjacentNodes(node *Node) []*Node {
 	cols := len(map_data[0])
 
 	//If the coordinates are passable then create a new node and add it
-	append_node := func (x, y int) {
-		//Check if node is not already in the graph and append that node
-		for _, n := range self.nodes {
-			if n.x == x && n.y == y {
-				result = append(result, n)
-				return
-			}
-		}
-		_type := map_data[x][y]
-		if _type == LAND || _type == STOP {
-			//Create a new node and add it to the graph
-			n := NewNode(x, y)
-			result = append(result, n)
-			self.nodes = append(self.nodes, n)
-		}
-	}
 	if node.x <= rows && node.y + 1 < cols {
-		append_node(node.x, node.y + 1)
+		if new_node := self.Node(node.x, node.y + 1); new_node != nil {
+			result = append(result, new_node)
+		}
 	}
 	if node.x <= rows && node.y - 1 >= 0 {
-		append_node(node.x, node.y - 1)
+		new_node := self.Node(node.x, node.y - 1);
+		if  new_node != nil {
+			result = append(result, new_node)
+		}
 	}
 	if node.y <= cols && node.x + 1 < rows {
-		append_node(node.x + 1, node.y)
+		new_node := self.Node(node.x + 1, node.y);
+		if  new_node != nil {
+			result = append(result, new_node)
+		}
 	}
 	if node.y <= cols && node.x - 1 >= 0 {
-		append_node(node.x - 1, node.y)
+		new_node := self.Node(node.x - 1, node.y);
+		if  new_node != nil {
+			result = append(result, new_node)
+		}
 	}
 	return result
 }
