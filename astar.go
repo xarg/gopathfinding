@@ -25,7 +25,8 @@ func NewMapData(rows, cols int) *MapData {
 	return &result
 }
 
-//A point is just a set of x, y coordinates with a PointType attached
+//A node is just a set of x, y coordinates with a parent node and a 
+//heuristic value H
 type Node struct {
 	x, y   int //Using int for efficiency
 	parent *Node
@@ -34,12 +35,11 @@ type Node struct {
 
 //Create a new node
 func NewNode(x, y int) *Node {
-	max_int := int(^uint(0) >> 1)
 	node := &Node{
 		x:      x,
 		y:      y,
 		parent: nil,
-		H:      max_int,
+		H:      0,
 	}
 	return node
 }
@@ -108,32 +108,31 @@ func (self *Graph) adjacentNodes(node *Node) []*Node {
 	cols := len(map_data[0])
 
 	//If the coordinates are passable then create a new node and add it
-	if node.x <= rows && node.y + 1 < cols {
-		if new_node := self.Node(node.x, node.y + 1); new_node != nil {
+	if node.x <= rows && node.y+1 < cols {
+		if new_node := self.Node(node.x, node.y+1); new_node != nil {
 			result = append(result, new_node)
 		}
 	}
-	if node.x <= rows && node.y - 1 >= 0 {
-		new_node := self.Node(node.x, node.y - 1);
-		if  new_node != nil {
+	if node.x <= rows && node.y-1 >= 0 {
+		new_node := self.Node(node.x, node.y-1)
+		if new_node != nil {
 			result = append(result, new_node)
 		}
 	}
-	if node.y <= cols && node.x + 1 < rows {
-		new_node := self.Node(node.x + 1, node.y);
-		if  new_node != nil {
+	if node.y <= cols && node.x+1 < rows {
+		new_node := self.Node(node.x+1, node.y)
+		if new_node != nil {
 			result = append(result, new_node)
 		}
 	}
-	if node.y <= cols && node.x - 1 >= 0 {
-		new_node := self.Node(node.x - 1, node.y);
-		if  new_node != nil {
+	if node.y <= cols && node.x-1 >= 0 {
+		new_node := self.Node(node.x-1, node.y)
+		if new_node != nil {
 			result = append(result, new_node)
 		}
 	}
 	return result
 }
-
 
 func abs(x int) int {
 	if x < 0 {
@@ -168,10 +167,13 @@ func hasNode(nodes []*Node, node *Node) bool {
 
 //Return the node with the minimum H
 func minH(nodes []*Node) *Node {
-	var result_node *Node
-	minH := int(^uint(0) >> 1)
+	if len(nodes) == 0 {
+		return nil
+	}
+	result_node := nodes[0]
+	minH := result_node.H
 	for _, node := range nodes {
-		if node.H <= minH {
+		if node.H < minH {
 			minH = node.H
 			result_node = node
 		}
@@ -193,6 +195,20 @@ func retracePath(current_node *Node) []*Node {
 	return path
 }
 
+// In our particular case: Manhatan distance
+func Heuristic(graph *Graph, tile *Node) int {
+	return abs(graph.stop.x-tile.x) + abs(graph.stop.y-tile.y)
+}
+
+// This is very inneficient
+func PathCost(node *Node) int {
+	var i int
+	for i = 0; node.parent != nil; i++ {
+		node = node.parent
+	}
+	return i
+}
+
 //A* search algorithm. See http://en.wikipedia.org/wiki/A*_search_algorithm
 func Astar(graph *Graph) []*Node {
 	var path, openSet, closedSet []*Node
@@ -201,6 +217,7 @@ func Astar(graph *Graph) []*Node {
 	for len(openSet) != 0 {
 		//Get the node with the min H
 		current := minH(openSet)
+		path_cost := PathCost(current)
 		if current == graph.stop {
 			return retracePath(current)
 		}
@@ -208,8 +225,7 @@ func Astar(graph *Graph) []*Node {
 		closedSet = append(closedSet, current)
 		for _, tile := range graph.adjacentNodes(current) {
 			if tile != nil && graph.stop != nil && !hasNode(closedSet, tile) {
-				tile.H = (abs(graph.stop.x-tile.x) +
-					abs(graph.stop.y-tile.y)) * 10
+				tile.H = Heuristic(graph, tile) + path_cost
 				if !hasNode(openSet, tile) {
 					openSet = append(openSet, tile)
 				}
