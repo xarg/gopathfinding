@@ -1,0 +1,13 @@
+language: erlang
+
+install:
+ - hg clone -u release https://code.google.com/p/go "${HOME}/go" >/dev/null 2>&1
+ - cd "${HOME}/go/src" && ./make.bash >/dev/null 2>&1
+ - mkdir -p "${HOME}/src" || true
+ - mkdir -p "${HOME}/bin" || true
+ - mkdir -p "${HOME}/pkg" || true
+ - export GOPATH="${HOME}"
+ - export PATH=${PATH}:${HOME}/go/bin
+
+iscript:
+ - go test -v github.com/humanfromearth/gopathfinding

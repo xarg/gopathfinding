@@ -58,4 +58,4 @@ Or
 
 ::
 
-        $ godoc github.com/humanfromearth/gopathfinding
+        $ go doc github.com/humanfromearth/gopathfinding
