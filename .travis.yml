@@ -10,4 +10,5 @@ install:
  - export PATH=${PATH}:${HOME}/go/bin
 
 script:
+ - go get -v github.com/humanfromearth/gopathfinding
  - go test -v github.com/humanfromearth/gopathfinding
