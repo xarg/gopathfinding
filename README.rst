@@ -1,3 +1,5 @@
+.. image:: https://secure.travis-ci.org/humanfromearth/gopathfinding.png?branch=master
+
 gopathfinding
 =================
 
