@@ -1,10 +1,10 @@
 package pathfinding
 
 import (
-	"testing"
-	"strings"
 	"fmt"
-	"rand"
+	"math/rand"
+	"strings"
+	"testing"
 )
 
 const MAP0 = `s....
@@ -168,7 +168,7 @@ func TestAstar3(t *testing.T) {
 }
 func BenchmarkAstar1(b *testing.B) {
 	b.StopTimer()
-	fmt.Println(b.N)
+	fmt.Printf("Benchmarking with a %dx%d map\n", b.N, b.N)
 	map_data := generate_map(b.N + 5)
 	graph := NewGraph(map_data)
 	b.StartTimer()

@@ -30,7 +30,8 @@ func NewMapData(rows, cols int) *MapData {
 type Node struct {
 	x, y   int //Using int for efficiency
 	parent *Node
-	H      int
+	H      int //Heuristic (aproximate distance)
+	cost   int //Path cost for this node
 }
 
 //Create a new node
@@ -40,6 +41,7 @@ func NewNode(x, y int) *Node {
 		y:      y,
 		parent: nil,
 		H:      0,
+		cost:   0,
 	}
 	return node
 }
@@ -82,6 +84,7 @@ func NewGraph(map_data *MapData) *Graph {
 	}
 	return g
 }
+
 //Get *Node based on x, y coordinates.
 func (self *Graph) Node(x, y int) *Node {
 	//Check if node is not already in the graph and append that node
@@ -200,15 +203,6 @@ func Heuristic(graph *Graph, tile *Node) int {
 	return abs(graph.stop.x-tile.x) + abs(graph.stop.y-tile.y)
 }
 
-// This is very inneficient
-func PathCost(node *Node) int {
-	var i int
-	for i = 0; node.parent != nil; i++ {
-		node = node.parent
-	}
-	return i
-}
-
 //A* search algorithm. See http://en.wikipedia.org/wiki/A*_search_algorithm
 func Astar(graph *Graph) []*Node {
 	var path, openSet, closedSet []*Node
@@ -217,7 +211,9 @@ func Astar(graph *Graph) []*Node {
 	for len(openSet) != 0 {
 		//Get the node with the min H
 		current := minH(openSet)
-		path_cost := PathCost(current)
+		if current.parent != nil {
+			current.cost = current.parent.cost + 1
+		}
 		if current == graph.stop {
 			return retracePath(current)
 		}
@@ -225,7 +221,7 @@ func Astar(graph *Graph) []*Node {
 		closedSet = append(closedSet, current)
 		for _, tile := range graph.adjacentNodes(current) {
 			if tile != nil && graph.stop != nil && !hasNode(closedSet, tile) {
-				tile.H = Heuristic(graph, tile) + path_cost
+				tile.H = Heuristic(graph, tile) + current.cost
 				if !hasNode(openSet, tile) {
 					openSet = append(openSet, tile)
 				}

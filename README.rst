@@ -17,7 +17,7 @@ Using goinstall
 
 ::
 
-        $ goinstall github.com/humanfromearth/gopathfinding
+        $ go get github.com/humanfromearth/gopathfinding
 
 Using make
 +++++++++++++
