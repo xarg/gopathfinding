@@ -9,5 +9,5 @@ install:
  - export GOPATH="${HOME}"
  - export PATH=${PATH}:${HOME}/go/bin
 
-iscript:
+script:
  - go test -v github.com/humanfromearth/gopathfinding
