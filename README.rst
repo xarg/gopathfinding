@@ -1,4 +1,4 @@
-.. image:: https://secure.travis-ci.org/humanfromearth/gopathfinding.png?branch=master
+.. image:: https://secure.travis-ci.org/xarg/gopathfinding.png?branch=master
 
 gopathfinding
 =================
@@ -19,14 +19,14 @@ Using goinstall
 
 ::
 
-        $ go get github.com/humanfromearth/gopathfinding
+        $ go get github.com/xarg/gopathfinding
 
 Using make
 +++++++++++++
 
 ::
 
-        $ git clone git://github.com/humanfromearth/gopathfinding
+        $ git clone git://github.com/xarg/gopathfinding
         $ cd gopathfinding
         $ make install
 
@@ -37,7 +37,7 @@ Example
 
         import (
                 "fmt"
-                pathfinding "github.com/humanfromearth/gopathfinding"
+                pathfinding "github.com/xarg/gopathfinding"
         )
 
         func main() {
@@ -54,10 +54,10 @@ Example
 Documentation
 ---------------
 
-http://gopkgdoc.appspot.com/pkg/github.com/humanfromearth/gopathfinding
+http://gopkgdoc.appspot.com/pkg/github.com/xarg/gopathfinding
 
 Or
 
 ::
 
-        $ go doc github.com/humanfromearth/gopathfinding
+        $ go doc github.com/xarg/gopathfinding
