@@ -25,10 +25,10 @@ func NewMapData(rows, cols int) *MapData {
 	return &result
 }
 
-//A node is just a set of x, y coordinates with a parent node and a 
+//A node is just a set of X, Y coordinates with a parent node and a
 //heuristic value H
 type Node struct {
-	x, y   int //Using int for efficiency
+	X, Y   int //Using int for efficiency
 	parent *Node
 	H      int //Heuristic (aproximate distance)
 	cost   int //Path cost for this node
@@ -37,8 +37,8 @@ type Node struct {
 //Create a new node
 func NewNode(x, y int) *Node {
 	node := &Node{
-		x:      x,
-		y:      y,
+		X:      x,
+		Y:      y,
 		parent: nil,
 		H:      0,
 		cost:   0,
@@ -48,7 +48,7 @@ func NewNode(x, y int) *Node {
 
 //Return string representation of the node
 func (self *Node) String() string {
-	return fmt.Sprintf("<Node x:%d y:%d addr:%d>", self.x, self.y, &self)
+	return fmt.Sprintf("<Node X:%d Y:%d addr:%d>", self.X, self.Y, &self)
 }
 
 //Start, end nodes and a slice of nodes
@@ -85,11 +85,11 @@ func NewGraph(map_data *MapData) *Graph {
 	return g
 }
 
-//Get *Node based on x, y coordinates.
+//Get *Node based on X, Y coordinates.
 func (self *Graph) Node(x, y int) *Node {
 	//Check if node is not already in the graph and append that node
 	for _, n := range self.nodes {
-		if n.x == x && n.y == y {
+		if n.X == x && n.Y == y {
 			return n
 		}
 	}
@@ -111,25 +111,25 @@ func (self *Graph) adjacentNodes(node *Node) []*Node {
 	cols := len(map_data[0])
 
 	//If the coordinates are passable then create a new node and add it
-	if node.x <= rows && node.y+1 < cols {
-		if new_node := self.Node(node.x, node.y+1); new_node != nil {
+	if node.X <= rows && node.Y+1 < cols {
+		if new_node := self.Node(node.X, node.Y+1); new_node != nil {
 			result = append(result, new_node)
 		}
 	}
-	if node.x <= rows && node.y-1 >= 0 {
-		new_node := self.Node(node.x, node.y-1)
+	if node.X <= rows && node.Y-1 >= 0 {
+		new_node := self.Node(node.X, node.Y-1)
 		if new_node != nil {
 			result = append(result, new_node)
 		}
 	}
-	if node.y <= cols && node.x+1 < rows {
-		new_node := self.Node(node.x+1, node.y)
+	if node.Y <= cols && node.X+1 < rows {
+		new_node := self.Node(node.X+1, node.Y)
 		if new_node != nil {
 			result = append(result, new_node)
 		}
 	}
-	if node.y <= cols && node.x-1 >= 0 {
-		new_node := self.Node(node.x-1, node.y)
+	if node.Y <= cols && node.X-1 >= 0 {
+		new_node := self.Node(node.X-1, node.Y)
 		if new_node != nil {
 			result = append(result, new_node)
 		}
@@ -200,7 +200,7 @@ func retracePath(current_node *Node) []*Node {
 
 // In our particular case: Manhatan distance
 func Heuristic(graph *Graph, tile *Node) int {
-	return abs(graph.stop.x-tile.x) + abs(graph.stop.y-tile.y)
+	return abs(graph.stop.X-tile.X) + abs(graph.stop.Y-tile.Y)
 }
 
 //A* search algorithm. See http://en.wikipedia.org/wiki/A*_search_algorithm

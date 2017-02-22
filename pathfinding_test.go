@@ -84,7 +84,7 @@ func str_map(data *MapData, nodes []*Node) string {
 		for j, cell := range row {
 			added := false
 			for _, node := range nodes {
-				if node.x == i && node.y == j {
+				if node.X == i && node.Y == j {
 					result += "+"
 					added = true
 					break
